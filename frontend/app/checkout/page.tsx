@@ -122,7 +122,7 @@ export default function CheckoutPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Nama lengkap"
-                className="w-full border border-amber-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-400"
+                className="w-full text-black border border-amber-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-400"
               />
             </div>
 
@@ -133,7 +133,7 @@ export default function CheckoutPage() {
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="08xxxxxxxxxx"
-                className="w-full border border-amber-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-400"
+                className="w-full text-black border border-amber-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-400"
               />
             </div>
           </section>
@@ -177,7 +177,7 @@ export default function CheckoutPage() {
                   onChange={(e) => setAddress(e.target.value)}
                   placeholder="Tulis alamat lengkap..."
                   rows={3}
-                  className="w-full border border-amber-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-400"
+                  className="w-full text-black border border-amber-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-400"
                 />
               </div>
             )}
@@ -191,7 +191,7 @@ export default function CheckoutPage() {
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Contoh: tolong gulanya dipisah"
               rows={2}
-              className="w-full border border-amber-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-400"
+              className="w-full text-black border border-amber-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-400"
             />
           </section>
 

@@ -55,6 +55,9 @@ model Order {
   id                    String   @id @default(uuid())
   userId                String?
   orderNumber           String   @unique
+  customerName          String
+  customerPhone         String
+  address               String?
   orderType             String   // 'pickup', 'delivery'
   status                String   @default("pending")
   subtotal              Int      @default(0)

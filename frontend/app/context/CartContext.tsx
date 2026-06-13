@@ -10,6 +10,7 @@ export type CartItem = {
   quantity: number;
   selectedVariants: {
     size: string;
+    temperature: string;
     iceLevel: string;
     sugarLevel: string;
   };
@@ -19,7 +20,12 @@ type AddToCartInput = {
   productId: string;
   name: string;
   unitPrice: number;
-  selectedVariants: CartItem["selectedVariants"];
+  selectedVariants: {
+    size: string;
+    temperature: string;
+    iceLevel: string;
+    sugarLevel: string;
+  };
 };
 
 type CartContextType = {
@@ -36,7 +42,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
 
   function addToCart(input: AddToCartInput) {
-    const uniqueId = `${input.productId}-${input.selectedVariants.size}-${input.selectedVariants.iceLevel}-${input.selectedVariants.sugarLevel}`;
+    const uniqueId = `${input.productId}-${input.selectedVariants.size}-${input.selectedVariants.temperature}-${input.selectedVariants.iceLevel}-${input.selectedVariants.sugarLevel}`;
 
     setItems((prev) => {
       const existing = prev.find((item) => item.id === uniqueId);

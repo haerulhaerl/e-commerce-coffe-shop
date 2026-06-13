@@ -63,7 +63,9 @@ export default function CartDrawer({ onClose }: CartDrawerProps) {
                   </div>
 
                   <p className="text-sm text-amber-600 mt-1">
-                    {item.selectedVariants.size} • {item.selectedVariants.iceLevel} • Gula {item.selectedVariants.sugarLevel}
+                    {item.selectedVariants.size} • {item.selectedVariants.temperature}
+                    {item.selectedVariants.iceLevel !== "-" && ` • ${item.selectedVariants.iceLevel}`}
+                    {" "}• Gula {item.selectedVariants.sugarLevel}
                   </p>
 
                   <div className="flex items-center gap-3 mt-2">
