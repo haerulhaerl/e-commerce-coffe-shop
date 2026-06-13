@@ -8,27 +8,23 @@ export default function CheckoutPage() {
   const { items, removeFromCart } = useCart();
   const router = useRouter();
 
-  // State form
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [orderType, setOrderType] = useState<"pickup" | "delivery">("pickup");
   const [address, setAddress] = useState("");
   const [notes, setNotes] = useState("");
 
-  // Hitung subtotal
   const subtotal = items.reduce(
     (sum, item) => sum + item.unitPrice * item.quantity,
     0
   );
 
-  // Biaya pengiriman sederhana: gratis jika pickup, flat rate jika delivery
   const deliveryFee = orderType === "delivery" ? 8000 : 0;
   const total = subtotal + deliveryFee;
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    // Validasi dasar
     if (!name || !phone) {
       alert("Nama dan nomor WhatsApp wajib diisi.");
       return;
@@ -44,25 +40,38 @@ export default function CheckoutPage() {
       return;
     }
 
-    // Simulasi proses checkout (nanti diganti panggilan API + Midtrans)
-    console.log("Order data:", {
-      customer: { name, phone },
-      orderType,
-      address: orderType === "delivery" ? address : null,
-      notes,
-      items,
-      subtotal,
-      deliveryFee,
-      total,
-    });
+    try {
+      const res = await fetch("http://localhost:5000/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customer: { name, phone },
+          orderType,
+          address: orderType === "delivery" ? address : null,
+          notes,
+          items,
+          subtotal,
+          deliveryFee,
+          total,
+        }),
+      });
 
-    alert("Pesanan berhasil dibuat! (simulasi)");
+      if (!res.ok) {
+        const errData = await res.json();
+        alert(errData.message || "Gagal membuat pesanan.");
+        return;
+      }
 
-    // Kosongkan keranjang setelah checkout
-    items.forEach((item) => removeFromCart(item.id));
+      const data = await res.json();
+      alert(`Pesanan berhasil dibuat! Nomor pesanan: ${data.order.orderNumber}`);
 
-    // Arahkan kembali ke halaman utama
-    router.push("/");
+      items.forEach((item) => removeFromCart(item.id));
+
+      router.push("/");
+    } catch (err) {
+      console.error(err);
+      alert("Terjadi kesalahan, coba lagi.");
+    }
   }
 
   if (items.length === 0) {
@@ -88,7 +97,6 @@ export default function CheckoutPage() {
       <div className="max-w-2xl mx-auto">
         <h1 className="text-2xl font-bold text-amber-900 mb-6">Checkout</h1>
 
-        {/* Ringkasan Pesanan */}
         <section className="bg-white rounded-2xl border border-amber-100 p-4 mb-6">
           <h2 className="font-semibold text-amber-900 mb-3">Ringkasan Pesanan</h2>
           <div className="space-y-2">
@@ -99,7 +107,9 @@ export default function CheckoutPage() {
                     {item.name} x{item.quantity}
                   </p>
                   <p className="text-amber-600">
-                    {item.selectedVariants.size} • {item.selectedVariants.iceLevel} • Gula {item.selectedVariants.sugarLevel}
+                    {item.selectedVariants.size} • {item.selectedVariants.temperature}
+                    {item.selectedVariants.iceLevel !== "-" && ` • ${item.selectedVariants.iceLevel}`}
+                    {" "}• Gula {item.selectedVariants.sugarLevel}
                   </p>
                 </div>
                 <p className="text-amber-800 font-medium">
@@ -110,7 +120,6 @@ export default function CheckoutPage() {
           </div>
         </section>
 
-        {/* Form Data Pelanggan */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <section className="bg-white rounded-2xl border border-amber-100 p-4">
             <h2 className="font-semibold text-amber-900 mb-3">Data Pelanggan</h2>
@@ -138,7 +147,6 @@ export default function CheckoutPage() {
             </div>
           </section>
 
-          {/* Opsi Pickup / Delivery */}
           <section className="bg-white rounded-2xl border border-amber-100 p-4">
             <h2 className="font-semibold text-amber-900 mb-3">Metode Pengambilan</h2>
 
@@ -183,7 +191,6 @@ export default function CheckoutPage() {
             )}
           </section>
 
-          {/* Catatan Tambahan */}
           <section className="bg-white rounded-2xl border border-amber-100 p-4">
             <label className="block text-sm text-amber-800 mb-1">Catatan (opsional)</label>
             <textarea
@@ -195,7 +202,6 @@ export default function CheckoutPage() {
             />
           </section>
 
-          {/* Total & Tombol Bayar */}
           <section className="bg-white rounded-2xl border border-amber-100 p-4">
             <div className="flex justify-between text-sm mb-1">
               <span className="text-amber-700">Subtotal</span>

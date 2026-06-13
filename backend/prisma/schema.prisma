@@ -58,6 +58,7 @@ model Order {
   customerName          String
   customerPhone         String
   address               String?
+  notes                 String?
   orderType             String   // 'pickup', 'delivery'
   status                String   @default("pending")
   subtotal              Int      @default(0)
