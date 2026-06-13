@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(uuid())
+  name          String
+  email         String?  @unique
+  phoneNumber   String?  @unique
+  passwordHash  String?
+  authProvider  String   @default("email") // 'email', 'google', 'whatsapp'
+  role          String   @default("customer") // 'customer', 'admin'
+  createdAt     DateTime @default(now())
+
+  orders        Order[]
+
+  @@map("users")
+}
+
+model Product {
+  id            String   @id @default(uuid())
+  name          String
+  description   String?
+  basePrice     Int
+  imageUrl      String?
+  category      String
+  isBestSeller  Boolean  @default(false)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  variants      ProductVariant[]
+  orderItems    OrderItem[]
+
+  @@map("products")
+}
+
+model ProductVariant {
+  id           String  @id @default(uuid())
+  productId    String
+  variantType  String  // 'size', 'ice_level', 'sugar_level'
+  variantName  String
+  extraPrice   Int     @default(0)
+
+  product      Product @relation(fields: [productId], references: [id])
+
+  @@map("product_variants")
+}
+
+model Order {
+  id                    String   @id @default(uuid())
+  userId                String?
+  orderNumber           String   @unique
+  orderType             String   // 'pickup', 'delivery'
+  status                String   @default("pending")
+  subtotal              Int      @default(0)
+  deliveryFee           Int      @default(0)
+  totalAmount           Int      @default(0)
+  paymentMethod         String?
+  paymentStatus         String   @default("unpaid")
+  midtransTransactionId String?
+  createdAt             DateTime @default(now())
+
+  user                  User?    @relation(fields: [userId], references: [id])
+  items                 OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id                String  @id @default(uuid())
+  orderId           String
+  productId         String
+  productName       String
+  quantity          Int
+  unitPrice         Int
+  selectedVariants  Json
+  notes             String?
+
+  order             Order   @relation(fields: [orderId], references: [id])
+  product           Product @relation(fields: [productId], references: [id])
+
+  @@map("order_items")
+}
