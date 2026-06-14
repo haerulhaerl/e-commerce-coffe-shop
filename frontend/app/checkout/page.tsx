@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCart } from "../context/CartContext";
+import { API_URL } from "../lib/api";
 
 export default function CheckoutPage() {
   const { items, removeFromCart } = useCart();
@@ -41,7 +42,7 @@ export default function CheckoutPage() {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/orders", {
+      const res = await fetch(`${API_URL}/api/orders`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

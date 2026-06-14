@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useCart } from "../context/CartContext";
 import CustomizeModal from "./CustomizeModal";
+import { API_URL } from "../lib/api";
 
 // Tipe data sesuai response API (termasuk variants dari Prisma)
 type Variant = {
@@ -35,7 +36,7 @@ export default function ProductList() {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const res = await fetch("http://localhost:5000/api/products");
+        const res = await fetch(`${API_URL}/api/products`);
         if (!res.ok) throw new Error("Gagal memuat menu");
         const data = await res.json();
         setProducts(data.products);
