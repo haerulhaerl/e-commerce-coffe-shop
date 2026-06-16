@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { useCart } from "../context/CartContext";
 import CustomizeModal from "./CustomizeModal";
-import { API_URL } from "../lib/api";
 
-// Tipe data sesuai response API (termasuk variants dari Prisma)
 type Variant = {
   id: string;
   variantType: string;
@@ -20,6 +19,7 @@ type Product = {
   basePrice: number;
   category: string;
   isBestSeller: boolean;
+  imageUrl: string | null;
   variants: Variant[];
 };
 
@@ -36,7 +36,8 @@ export default function ProductList() {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const res = await fetch(`${API_URL}/api/products`);
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+        const res = await fetch(`${apiUrl}/api/products`);
         if (!res.ok) throw new Error("Gagal memuat menu");
         const data = await res.json();
         setProducts(data.products);
@@ -57,21 +58,26 @@ export default function ProductList() {
       : products.filter((p) => p.category === activeCategory);
 
   return (
-    <section className="max-w-4xl mx-auto px-4 py-8">
-      <h2 className="text-2xl font-bold text-amber-900 mb-4">
-        Menu Erawa Coffee
-      </h2>
+    <section id="menu" className="max-w-6xl mx-auto px-4 py-16 scroll-mt-20">
+      <div className="text-center mb-10">
+        <p className="text-amber-600 text-sm font-medium tracking-wide uppercase mb-2">
+          Pilihan Terbaik
+        </p>
+        <h2 className="text-3xl md:text-4xl font-bold text-amber-900">
+          Menu Favorit Kami
+        </h2>
+      </div>
 
-      <div className="flex gap-3 mb-6 overflow-x-auto">
+      <div className="flex gap-3 mb-10 justify-center flex-wrap">
         {categories.map((cat) => (
           <button
             key={cat}
             onClick={() => setActiveCategory(cat)}
-            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition
+            className={`px-5 py-2 rounded-full text-sm font-medium transition
               ${
                 activeCategory === cat
                   ? "bg-amber-800 text-white"
-                  : "bg-amber-100 text-amber-800 border border-amber-200"
+                  : "bg-white text-amber-800 border border-amber-200 hover:border-amber-400"
               }`}
           >
             {cat}
@@ -79,31 +85,63 @@ export default function ProductList() {
         ))}
       </div>
 
-      {loading && <p className="text-amber-700">Memuat menu...</p>}
-      {error && <p className="text-red-600">{error}</p>}
+      {loading && <p className="text-amber-700 text-center">Memuat menu...</p>}
+      {error && <p className="text-red-600 text-center">{error}</p>}
 
       {!loading && !error && (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProducts.map((product) => (
             <div
               key={product.id}
-              className="bg-white rounded-2xl shadow-sm border border-amber-100 p-4 hover:shadow-md transition relative"
+              className="bg-white rounded-2xl shadow-sm border border-amber-100 overflow-hidden hover:shadow-lg transition group"
             >
-              {product.isBestSeller && (
-                <span className="absolute top-2 right-2 bg-amber-600 text-white text-xs px-2 py-1 rounded-full">
-                  Best Seller
+              {/* Gambar produk */}
+              <div className="relative w-full h-56 bg-amber-100">
+                {product.imageUrl ? (
+                  <Image
+                    src={product.imageUrl}
+                    alt={product.name}
+                    fill
+                    className="object-cover group-hover:scale-105 transition duration-300"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-4xl">
+                    ☕
+                  </div>
+                )}
+
+                {product.isBestSeller && (
+                  <span className="absolute top-3 left-3 bg-amber-600 text-white text-xs font-medium px-3 py-1 rounded-full">
+                    Best Seller
+                  </span>
+                )}
+
+                {/* Harga sebagai tag di gambar */}
+                <span className="absolute bottom-3 right-3 bg-amber-900 text-white text-sm font-bold px-3 py-1.5 rounded-full">
+                  Rp{product.basePrice.toLocaleString("id-ID")}
                 </span>
-              )}
-              <h3 className="font-semibold text-amber-900">{product.name}</h3>
-              <p className="text-amber-700 font-bold mt-1">
-                Rp{product.basePrice.toLocaleString("id-ID")}
-              </p>
-              <button
-                onClick={() => setSelectedProduct(product)}
-                className="mt-3 w-full bg-amber-800 text-white text-sm py-2 rounded-lg hover:bg-amber-900 transition"
-              >
-                Tambah ke Keranjang
-              </button>
+              </div>
+
+              {/* Info produk */}
+              <div className="p-5">
+                <p className="text-amber-500 text-xs font-medium uppercase tracking-wide mb-1">
+                  {product.category}
+                </p>
+                <h3 className="font-bold text-amber-900 text-lg mb-1">
+                  {product.name}
+                </h3>
+                {product.description && (
+                  <p className="text-amber-700 text-sm mb-4 line-clamp-2">
+                    {product.description}
+                  </p>
+                )}
+                <button
+                  onClick={() => setSelectedProduct(product)}
+                  className="w-full bg-amber-800 text-white text-sm py-2.5 rounded-lg hover:bg-amber-900 transition font-medium"
+                >
+                  Tambah ke Keranjang
+                </button>
+              </div>
             </div>
           ))}
         </div>

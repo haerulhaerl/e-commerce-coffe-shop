@@ -10,7 +10,6 @@ async function main() {
   await prisma.productVariant.deleteMany()
   await prisma.product.deleteMany()
 
-  // Varian standar: size, temperature (Hot/Iced), ice_level (hanya relevan jika Iced), sugar_level
   const standardVariants = [
     { variantType: 'size', variantName: 'Regular', extraPrice: 0 },
     { variantType: 'size', variantName: 'Large', extraPrice: 5000 },
@@ -24,7 +23,6 @@ async function main() {
     { variantType: 'sugar_level', variantName: 'No Sugar (0%)', extraPrice: 0 },
   ]
 
-  // Untuk minuman yang hanya tersedia dingin (misal Es Teh Lemon)
   const coldOnlyVariants = [
     { variantType: 'size', variantName: 'Regular', extraPrice: 0 },
     { variantType: 'size', variantName: 'Large', extraPrice: 5000 },
@@ -43,7 +41,7 @@ async function main() {
       basePrice: 18000,
       category: 'Coffee',
       isBestSeller: true,
-      imageUrl: '/images/gula-aren.jpg',
+      imageUrl: '/images/kopi-susu-gula-aren.jpg',
       variants: { create: standardVariants },
     },
   })
@@ -55,6 +53,7 @@ async function main() {
       basePrice: 15000,
       category: 'Coffee',
       isBestSeller: false,
+      imageUrl: '/images/americano.jpg',
       variants: { create: standardVariants },
     },
   })
@@ -66,6 +65,7 @@ async function main() {
       basePrice: 22000,
       category: 'Non-Coffee',
       isBestSeller: true,
+      imageUrl: '/images/matcha-latte.jpg',
       variants: { create: standardVariants },
     },
   })
@@ -77,6 +77,7 @@ async function main() {
       basePrice: 12000,
       category: 'Tea',
       isBestSeller: false,
+      imageUrl: '/images/es-teh-lemon.jpg',
       variants: { create: coldOnlyVariants },
     },
   })
@@ -88,6 +89,7 @@ async function main() {
       basePrice: 20000,
       category: 'Coffee',
       isBestSeller: false,
+      imageUrl: '/images/cappuccino.jpg',
       variants: { create: standardVariants },
     },
   })
